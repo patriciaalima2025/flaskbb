@@ -1,0 +1,7 @@
+# Retrospectiva
+
+Ao final do projeto, o módulo `forum` passou a ter propósito, mapa de arquivos, pontos de entrada e saídas documentados, o que antes só podia ser descoberto lendo mais de 3 mil linhas de código. As docstrings novas tornaram explícitos contratos que o nome não revela: que ocultar o primeiro post oculta o tópico inteiro, que os métodos auxiliares de `Post` não fazem `commit` e que `Topic.second_last_post` devolve um id, não um objeto. A análise também registrou a dependência cíclica com `user`, a duplicação do "último post" e o `Topic.save` não atômico, riscos que antes estavam implícitos.
+
+A técnica mais útil foi o levantamento de dependências com o diagrama Mermaid, porque tornou visível o ciclo `forum` ↔ `user` e explicou por que há tantos imports dentro de funções. O histórico do Git também foi muito útil para aplicar as Leis de Lehman com números concretos, em vez de impressões. A parte mais difícil foi transformar "isolar o banco" em passos pequenos: com 18 `commit` espalhados e plugins escutando eventos de gravação, cada passo precisou garantir que o sistema continuasse funcionando e que a mudança pudesse ser verificada por testes.
+
+Se o projeto fosse reiniciado, começaríamos pelos testes de caracterização das regras de último post e contagem, que são o ponto mais frágil do módulo, e só depois faríamos refatorações. Também registraríamos a baseline de cobertura com `coverage run -m pytest -n0`, já que o `pytest --cov` com execução paralela subestima a cobertura dos módulos importados antes do início da medição.
